@@ -1,5 +1,7 @@
 #include <SoftwareSerial.h>
-SoftwareSerial bluetoothSerial(9, 10); //HC06-TX Pin 10, HC06-RX to Arduino Pin 11
+
+const int btTX = 9; // HC06 TX to given pin
+const int btRX = 10; // HC06 RX to given pin
 
 // Motor A
 const int motor1Pin1 = 2; // IN1 on the L293D
@@ -14,10 +16,11 @@ const int enableMotor2 = 5; // EN2 on the L293D
 int throttle = 0, turn = 0;
 unsigned long lastInputTimestamp;
 
+SoftwareSerial bluetoothSerial(btTX, btRX);
+
 void setup() {
-  bluetoothSerial.begin(57600); //Baudrate 57600 , Choose your own baudrate 
+  bluetoothSerial.begin(57600); // Baudrate of 57600, make sure to run baud update before changing this 
   Serial.begin(115200);
-  pinMode(LED, OUTPUT);
 }
 
 void parseSerialInput() {
@@ -68,6 +71,8 @@ void loop() {
   }
 
   // Print out values
+  Serial.print(millis() / 1000.0);
+  Serial.print("s: ");
   Serial.print(throttle);
   Serial.print(" ");
   Serial.println(turn);
@@ -78,7 +83,7 @@ void loop() {
   if (!btAvailable) {
     // Reset drive values if no inputs after 500ms
     if (millis() - lastInputTimestamp > 500) {
-      Serial.println("reset!");
+      Serial.println("Waiting for input...");
       throttle = 0;
       turn = 0;
 
@@ -86,7 +91,6 @@ void loop() {
     }
 
     // We run this delay statement after everything so we always act on newest data on loop iter
-    // Serial.println("waiting for input...");
     delay(25);
   }
 }
