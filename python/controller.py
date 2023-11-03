@@ -1,4 +1,5 @@
 import pygame
+import pygame._sdl2.controller as pg_sdl_controller
 import sys
 import dataclasses
 
@@ -35,13 +36,14 @@ class DriveState:
 
 
 class Controller:
-    joystick: pygame.joystick.Joystick
+    joystick: pg_sdl_controller.Controller
     _drive_state: DriveState
 
     def __init__(self, joystick_id: int):
         # Initialize Pygame and the joystick
         pygame.init()
         pygame.joystick.init()
+        pg_sdl_controller.init()
 
         # Check for joystick count
         if pygame.joystick.get_count() < max(0, joystick_id + 1):
@@ -49,8 +51,9 @@ class Controller:
             pygame.quit()
             sys.exit()
 
-        self.joystick = pygame.joystick.Joystick(0)
-        self.joystick.init()
+        joystick = pygame.joystick.Joystick(0)
+        joystick.init()
+        self.joystick = pg_sdl_controller.Controller.from_joystick(joystick)
 
     def loop(self) -> bool:
         for game_event in pygame.event.get():
@@ -59,7 +62,7 @@ class Controller:
                 return False
 
         self._drive_state = self._get_joystick_state()
-        
+
         if self._drive_state.button_ls and self._drive_state.button_rs:
             self.exit()
             return False
@@ -75,19 +78,34 @@ class Controller:
 
     def _get_joystick_state(self):
         return DriveState(
-            left_stick_x=self.joystick.get_axis(0),
-            left_stick_y=self.joystick.get_axis(1),
-            right_stick_x=self.joystick.get_axis(2),
-            right_stick_y=self.joystick.get_axis(3),
-            left_trigger=self.joystick.get_axis(4),
-            right_trigger=self.joystick.get_axis(5),
-            button_a=self.joystick.get_button(0),
-            button_b=self.joystick.get_button(1),
-            button_x=self.joystick.get_button(2),
-            button_y=self.joystick.get_button(3),
-            button_ls=self.joystick.get_button(8),
-            button_rs=self.joystick.get_button(9),
+            left_stick_x=self.joystick.get_axis(pygame.CONTROLLER_AXIS_LEFTX) / 32768,
+            left_stick_y=self.joystick.get_axis(pygame.CONTROLLER_AXIS_LEFTY) / 32768,
+            right_stick_x=self.joystick.get_axis(pygame.CONTROLLER_AXIS_RIGHTX) / 32768,
+            right_stick_y=self.joystick.get_axis(pygame.CONTROLLER_AXIS_RIGHTY) / 32768,
+            left_trigger=self.joystick.get_axis(pygame.CONTROLLER_AXIS_TRIGGERLEFT) / 32768,
+            right_trigger=self.joystick.get_axis(pygame.CONTROLLER_AXIS_TRIGGERRIGHT) / 32768,
+            button_a=self.joystick.get_button(pygame.CONTROLLER_BUTTON_A),
+            button_b=self.joystick.get_button(pygame.CONTROLLER_BUTTON_B),
+            button_x=self.joystick.get_button(pygame.CONTROLLER_BUTTON_X),
+            button_y=self.joystick.get_button(pygame.CONTROLLER_BUTTON_Y),
+            button_ls=self.joystick.get_button(pygame.CONTROLLER_BUTTON_LEFTSTICK),
+            button_rs=self.joystick.get_button(pygame.CONTROLLER_BUTTON_RIGHTSTICK),
         )
+
+#        return DriveState(
+#            left_stick_x=self.joystick.get_axis(0),
+#            left_stick_y=self.joystick.get_axis(1),
+#            right_stick_x=self.joystick.get_axis(2),
+#            right_stick_y=self.joystick.get_axis(3),
+#            left_trigger=self.joystick.get_axis(4),
+#            right_trigger=self.joystick.get_axis(5),
+#            button_a=self.joystick.get_button(0),
+#            button_b=self.joystick.get_button(1),
+#            button_x=self.joystick.get_button(2),
+#            button_y=self.joystick.get_button(3),
+#            button_ls=self.joystick.get_button(8),
+#            button_rs=self.joystick.get_button(9),
+#        )
 
     def exit(self):
         pygame.quit()
