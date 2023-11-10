@@ -41,7 +41,7 @@ class Controller(InputDevice):
     _controller_state: ControllerState
 
     def __init__(self, joystick_id: int):
-        super()
+        super().__init__()
         
         # Initialize joystick
         pygame.joystick.init()
@@ -62,7 +62,7 @@ class Controller(InputDevice):
             self.exit()
             return False
 
-        return super().loop()
+        return super.loop()
 
     @property
     def controller_state(self):
