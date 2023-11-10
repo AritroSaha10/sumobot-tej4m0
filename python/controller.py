@@ -62,7 +62,7 @@ class Controller(InputDevice):
             self.exit()
             return False
 
-        return super.loop()
+        return super().loop()
 
     @property
     def controller_state(self):
