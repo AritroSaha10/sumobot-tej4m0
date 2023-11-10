@@ -2,8 +2,13 @@ import pygame
 import pygame._sdl2.controller as pg_sdl_controller
 import sys
 import dataclasses
+import math
 
 DEADZONE = 15
+
+# https://www.desmos.com/calculator/diehz25nfg
+def transform_joystick_axis(raw: float, reflect: bool = False) -> int:
+    return int((raw / abs(raw)) * math.sqrt(abs(x)) * 255) * (-1 if reflect else 1)
 
 @dataclasses.dataclass
 class DriveState:
@@ -24,8 +29,8 @@ class DriveState:
     button_rs: bool
 
     def format_for_device(self) -> bytes:
-        throttle = int(-self.left_stick_y * 255)
-        turn = int(self.right_stick_x * 255)
+        throttle = transform_joystick_axis(self.left_stick_y, True)
+        turn = transform_joystick_axis(self.right_stick_x, False)
         if abs(throttle) < DEADZONE:
             throttle = 0
         if abs(turn) < DEADZONE:
