@@ -20,13 +20,27 @@ class KeyboardState:
         )
 
 class Keyboard(InputDevice):
+    keyboard = pygame.key
     _keyboard_state: KeyboardState
 
     def __init__(self):
         super().__init__()
 
-        self.keyboard = pygame.key
+        self.width = 500
+        self.height = 500
+        self.colour = (255, 255, 255)
+        self.screen = pygame.display.set_mode((self.width, self.height))
+        self.screen.fill(self.colour)
 
+        self.font = pygame.font.SysFont("arial", 20)
+        self.text = self.font.render("Keep This Window Focused", True, (0, 0, 0), (255, 255, 255))
+        self.textRect = self.text.get_rect()
+        self.textRect.center = self.width//2, self.height//2
+
+        self.screen.blit(self.text, self.textRect)
+
+        pygame.display.flip()
+        
     def loop(self) -> bool:
         self._keyboard_state = self._get_keyboard_state()
 
@@ -42,7 +56,7 @@ class Keyboard(InputDevice):
     
     @property
     def drive_state(self):
-        return self.keyboard_state.convert_to_drivestate()
+        return self._keyboard_state.convert_to_drivestate()
     
     def _get_keyboard_state(self):
         _pygame_keyboard_state = self.keyboard.get_pressed() 
