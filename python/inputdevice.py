@@ -12,7 +12,7 @@ class InputDevice(ABC):
             if game_event.type == pygame.QUIT:
                 self.exit()
                 return False
-            
+        
         # Limit loop to 60 Hz
         pygame.time.Clock().tick(60)
         

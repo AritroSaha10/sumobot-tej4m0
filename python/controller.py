@@ -10,7 +10,8 @@ DEADZONE = 15
 
 # https://www.desmos.com/calculator/diehz25nfg
 def transform_joystick_axis(raw: float, reflect: bool = False) -> int:
-    return int((raw / abs(raw)) * math.sqrt(abs(x)) * 255) * (-1 if reflect else 1)
+    raw = 0 if abs(raw) < DEADZONE / 255 else raw
+    return int((-1 if raw < 0 else 1) * math.sqrt(abs(raw)) * 255) * (-1 if reflect else 1)
 
 @dataclasses.dataclass
 class ControllerState:
@@ -41,7 +42,7 @@ class Controller(InputDevice):
     _controller_state: ControllerState
 
     def __init__(self, joystick_id: int):
-        super()
+        super().__init__()
         
         # Initialize joystick
         pygame.joystick.init()
