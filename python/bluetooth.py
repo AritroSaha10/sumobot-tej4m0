@@ -12,12 +12,15 @@ def initialize_bluetooth_serial() -> serial.Serial:
         serial_port_desc_key = "Standard Serial over Bluetooth link"
     elif sys.platform.startswith("linux"):
         serial_port_name_key = "rfcomm"
+    elif sys.platform.startswith("darwin"):
+        serial_port_name_key = "cu.HC-06"
+        print("WARNING: MacOS support is experimental due to bluetooth serial issues on Darwin platforms. Please consider using a Windows or Linux computer instead.")
     else:
         raise OSError("OS not supported yet")
 
-    print("Scanning for serial ports...")
+    print("\nScanning for serial ports...\n")
     serial_port = None
-    valid_ports = [port for port in ports if serial_port_desc_key in port.description or serial_port_name_key in port.name]
+    valid_ports = [port for port in ports if serial_port_desc_key in port.description and serial_port_name_key in port.name]
 
     for port in valid_ports:
         try:
@@ -34,8 +37,9 @@ def initialize_bluetooth_serial() -> serial.Serial:
                 tmp_serial.close()
                 continue
         except SerialException as e:
-            print(f"port {port.name} invalid...")
-            continue
+            print(f"port {port.name} invalid...", e)
+        
+        print()
 
 
     assert serial_port is not None, "Could not find valid serial port"
