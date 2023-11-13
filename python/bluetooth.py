@@ -24,7 +24,7 @@ def initialize_bluetooth_serial() -> serial.Serial:
             print(f"attempting port {port.device}...")
 
             tmp_serial = serial.Serial(port.device, 57600, timeout = 1) #Change your port name COM... and your baudrate
-
+            tmp_serial.write_timeout = 2
             if input("Is the LED of the bluetooth module currently solid? (y/n) ") == "y":
                 serial_port = tmp_serial
                 print(f"port {port.name} is valid!")
