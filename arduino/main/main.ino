@@ -19,7 +19,7 @@ unsigned long lastInputTimestamp;
 SoftwareSerial bluetoothSerial(btTX, btRX);
 
 void setup() {
-  bluetoothSerial.begin(57600); // Baudrate of 57600, make sure to run baud update before changing this 
+  bluetoothSerial.begin(9600); // Baudrate of 57600, make sure to run baud update before changing this 
   Serial.begin(115200);
 }
 
