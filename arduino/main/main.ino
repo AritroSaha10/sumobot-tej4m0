@@ -24,10 +24,7 @@ void setup() {
 }
 
 void parseSerialInput() {
-  String str = String((char) bluetoothSerial.read());
-  while (str.charAt(str.length() - 1) != '\n' && bluetoothSerial.available() > 0) {
-    str += (char) bluetoothSerial.read();
-  }
+  String str = bluetoothSerial.readStringUntil('\n');
   sscanf(str.c_str(), "%d,%d\n", &throttle, &turn);
   lastInputTimestamp = millis();
 }
