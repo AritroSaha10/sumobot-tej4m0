@@ -25,7 +25,7 @@ void setup() {
 
 void parseSerialInput() {
   String str = bluetoothSerial.readStringUntil('\n');
-  sscanf(str.c_str(), "%d,%d\n", &throttle, &turn);
+  sscanf(str.c_str(), "%d,%d", &throttle, &turn);
   lastInputTimestamp = millis();
 }
 
